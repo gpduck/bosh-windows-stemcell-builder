@@ -274,6 +274,20 @@ function Create-Unattend-GCP() {
   Out-File -FilePath $UnattendPath -InputObject $UnattendXML -Encoding utf8 -Force
 }
 
+function Enable-OSPartition-Resize {
+    $answerFilePath = "C:\ProgramData\Amazon\EC2-Windows\Launch\Sysprep\Unattend-Test.xml"
+    $content = [xml](Get-Content $answerFilePath)
+    $extendOSPartition = $content.CreateElement("ExtendOSPartition", $content.DocumentElement.NamespaceURI)
+    $extend = $content.CreateElement("Extend", $content.DocumentElement.NamespaceURI)
+    $extend.InnerText = "true"
+    $extendOSPartition.AppendChild($extend)
+
+    $deploymentComponent = (($content.unattend.settings|where {$_.pass -eq 'specialize'}).component|where {$_.name -eq "Microsoft-Windows-Deployment"})
+    $deploymentComponent.AppendChild($extendOSPartition)
+
+    $content.Save($answerFilePath)
+}
+
 <#
 .Synopsis
     Sysprep Utilities
@@ -333,6 +347,7 @@ function Invoke-Sysprep() {
                     $LaunchConfig.addDnsSuffixList = $False
                     $LaunchConfig | ConvertTo-Json | Set-Content $LaunchConfigJson
 
+                    Enable-OSPartition-Resize
                     # Enable sysprep
                     cd 'C:\ProgramData\Amazon\EC2-Windows\Launch\Scripts'
                     ./InitializeInstance.ps1 -Schedule
