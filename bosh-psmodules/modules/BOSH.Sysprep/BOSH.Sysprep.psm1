@@ -320,6 +320,8 @@ function Invoke-Sysprep() {
         "aws" {
             switch ($OsVersion) {
                 "windows2012R2" {
+                    Enable-OSPartition-Resize
+
                     $ec2config = [xml] (get-content 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml')
 
                     # Enable password generation and retrieval
@@ -347,7 +349,6 @@ function Invoke-Sysprep() {
                     $LaunchConfig.addDnsSuffixList = $False
                     $LaunchConfig | ConvertTo-Json | Set-Content $LaunchConfigJson
 
-                    Enable-OSPartition-Resize
                     # Enable sysprep
                     cd 'C:\ProgramData\Amazon\EC2-Windows\Launch\Scripts'
                     ./InitializeInstance.ps1 -Schedule
