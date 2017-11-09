@@ -275,7 +275,7 @@ function Create-Unattend-GCP() {
 }
 
 function Enable-OSPartition-Resize {
-    $answerFilePath = "C:\ProgramData\Amazon\EC2-Windows\Launch\Sysprep\Unattend.xml"
+    $answerFilePath = "C:\Program Files\Amazon\Ec2ConfigService\sysprep2008.xml"
     $content = [xml](Get-Content $answerFilePath)
     $extendOSPartition = $content.CreateElement("ExtendOSPartition", $content.DocumentElement.NamespaceURI)
     $extend = $content.CreateElement("Extend", $content.DocumentElement.NamespaceURI)
